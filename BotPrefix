@@ -1,0 +1,5 @@
+package deve;
+
+public class BotPrefix {
+	public static final String prefix = ":";
+}
