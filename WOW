@@ -1,0 +1,58 @@
+package deve;
+
+import java.awt.Color;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+public class WOW extends ListenerAdapter {
+	public static void main(String[] args) throws Exception{
+		JDA jda = new JDABuilder(AccountType.BOT).setToken("NDM3MDQ3ODMzNjMyMzA5MjQ4.DbwYLg.rTGPZtQV_Dfoa3jt5wIbXs6El3Q").buildAsync();
+		jda.getPresence().setGame(Game.playing("Fait :help"));
+		jda.addEventListener(new WOW());
+	}
+	public void onMessageReceived(MessageReceivedEvent e) {
+		String msg = e.getMessage().getContentRaw();
+		 if (msg.startsWith(BotPrefix.prefix + "ping")) {
+			String user = e.getAuthor().getAsMention();
+			e.getTextChannel().sendMessage(user + " pong").queue();
+		} else if (msg.startsWith(BotPrefix.prefix + "info")) {
+			String guild = e.getGuild().getName();
+			String user = e.getAuthor().getName();
+			OnlineStatus member = e.getMember().getOnlineStatus();
+			OffsetDateTime joinDate = e.getMember().getJoinDate();
+			Game game = e.getMember().getGame();
+			List<Role> userRole = e.getMember().getRoles();
+			e.getTextChannel().sendMessage("**Le nom du serveur est " + guild + "\nTu est en *" + member + "*\nTu est *" + user + "*\nTu as re join le serveur le *" + joinDate + "*\nTu joue as *" + game + "*\nTu as les rôles suivants : *" + userRole + "***").queue();
+		} else if (msg.startsWith(BotPrefix.prefix + "animation")) {
+			e.getTextChannel().sendMessage("@everyone\nIl va bintôt y avoir un event").queue();
+		} else if (msg.startsWith(BotPrefix.prefix + "help")) {
+			EmbedBuilder eb = new EmbedBuilder();
+			eb.setTitle("Liste des commandes");
+			eb.setColor(Color.RED);
+			eb.addField(BotPrefix.prefix + "info", "pour avoir les infos du serveur et les votres", false);
+			eb.addField(BotPrefix.prefix + "ping", "pour jouer au Ping Pong avec StartBot", false);
+			eb.addField(BotPrefix.prefix + "animation", "pour prévenir d'une évantuelle animation", false);
+			eb.addField(BotPrefix.prefix + "version", "pour voir la version du Bot", false);
+			eb.addField(BotPrefix.prefix + "m'ajouter", "pour ajouter le Bot sur ton serveur", false);
+			e.getChannel().sendMessage(eb.build()).queue();
+		} else if (msg.startsWith(BotPrefix.prefix + "version")) {
+			e.getTextChannel().sendMessage("**Version Beta 0.5**").queue();
+		} else if (msg.startsWith(BotPrefix.prefix + "m'ajouter")) {
+			e.getTextChannel().sendMessage("**Lien pour m'ajouter :** https://discordapp.com/api/oauth2/authorize?client_id=437047833632309248&scope=bot&permissions=800").queue();
+		}
+	}
+	public void onGuildMemberJoin(GuildMemberJoinEvent e) {
+		e.getGuild().getDefaultChannel().sendMessage(e.getUser().getAsMention()+ "à rejoin le serveur " + e.getGuild().getName());
+	}
+}
